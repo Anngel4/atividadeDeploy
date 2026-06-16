@@ -22,14 +22,31 @@ const produtoRepository = {
 
     editar: async (produto) => {
         const conn = await connection.getConnection();
+
         try {
             await conn.beginTransaction();
-            const sql = `UPDATE produtos SET id_categoria = ?, nome = ?, descricao = ?, preco = ?, quantidade_estoque = ? WHERE id_produto = ?`;
-            const values = [produto.idCategoria, produto.nome, produto.descricao, produto.preco, produto.quantidade_estoque, produto.id];
-            
-            const [rows] = await conn.execute(sql, values);
+
+            const sql = `
+                UPDATE produtos 
+                SET id_categoria = ?, nome = ?, descricao = ?, preco = ?, quantidade_estoque = ?
+                WHERE id_produto = ?
+            `;
+
+            const values = [
+                produto.idCategoria,
+                produto.nome,
+                produto.descricao,
+                produto.preco,
+                produto.quantidade_estoque,
+                produto.id
+            ];
+
+            const [result] = await conn.execute(sql, values);
+
             await conn.commit();
-            return rows;
+
+            return result;
+
         } catch (error) {
             await conn.rollback();
             throw error;
@@ -40,14 +57,18 @@ const produtoRepository = {
 
     deletar: async (id) => {
         const conn = await connection.getConnection();
+
         try {
             await conn.beginTransaction();
-            const sql = 'DELETE FROM produtos WHERE id_produto = ?';
-            const values = [id];
-            
-            const [rows] = await conn.execute(sql, values);
+
+            const sql = `DELETE FROM produtos WHERE id_produto = ?`;
+
+            const [result] = await conn.execute(sql, [id]);
+
             await conn.commit();
-            return rows;
+
+            return result;
+
         } catch (error) {
             await conn.rollback();
             throw error;
@@ -58,11 +79,18 @@ const produtoRepository = {
 
     selecionar: async () => {
         const conn = await connection.getConnection();
+
         try {
-            const sql = 'SELECT * FROM produtos ORDER BY quantidade_estoque DESC';
-            
+            const sql = `
+                SELECT * 
+                FROM produtos 
+                ORDER BY quantidade_estoque DESC
+            `;
+
             const [rows] = await conn.execute(sql);
+
             return rows;
+
         } catch (error) {
             throw error;
         } finally {
@@ -72,12 +100,14 @@ const produtoRepository = {
 
     selecionarValor: async (produtoId) => {
         const conn = await connection.getConnection();
+
         try {
-            const sql = 'SELECT preco FROM produtos WHERE id_produto = ?';
-            const values = [produtoId];
-            
-            const [rows] = await conn.execute(sql, values);
+            const sql = `SELECT preco FROM produtos WHERE id_produto = ?`;
+
+            const [rows] = await conn.execute(sql, [produtoId]);
+
             return rows;
+
         } catch (error) {
             throw error;
         } finally {
@@ -87,12 +117,14 @@ const produtoRepository = {
 
     selecionarUm: async (id) => {
         const conn = await connection.getConnection();
+
         try {
-            const sql = 'SELECT * FROM produtos WHERE id_produto = ?';
-            const values = [id];
-            
-            const [rows] = await conn.execute(sql, values);
+            const sql = `SELECT * FROM produtos WHERE id_produto = ?`;
+
+            const [rows] = await conn.execute(sql, [id]);
+
             return rows;
+
         } catch (error) {
             throw error;
         } finally {
